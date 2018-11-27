@@ -3,7 +3,7 @@ from wtforms import StringField, TextAreaField, SubmitField, PasswordField, Bool
 from wtforms.validators import DataRequired, EqualTo, Email, ValidationError
 from wtforms.fields.html5 import DateField
 from app import db
-from app.models import Artist, Performance, ArtistToPerformance, Location, Genre, artistToGenre
+from app.models import Artist, Performance, ArtistToPerformance, Location, Genre, ArtistToGenre
 
 
 class LoginForm(FlaskForm):

@@ -1,6 +1,5 @@
 from datetime import datetime
 from app import app, db, login
-from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 
@@ -72,7 +71,7 @@ class Genre(db.Model):
     artistGenre=db.relationship('ArtistToGenre')
 
 
-class artistToGenre(db.Model):
+class ArtistToGenre(db.Model):
     artistID = db.Column(db.Integer, db.ForeignKey('artist.id'), primary_key=True)
     genreID = db.Column(db.Integer, db.ForeignKey('genre.id'), primary_key=True)
     artist = db.relationship('Artist')
