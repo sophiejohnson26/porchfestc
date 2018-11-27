@@ -39,3 +39,12 @@ class EventSignUp (FlaskForm):
     time = TimeField('Time', validators=DataRequired)
     location = StringField('Location', validators=DataRequired)
 
+
+class EditProfile (FlaskForm):
+    username = StringField('Change Username')
+    email = StringField('Change Email')
+    artistName = StringField('Change artist name')
+    bio = StringField('Change Biography')
+    genre = StringField('Change Genres')  #could use autofill
+    submit = SubmitField('Save')
+
