@@ -42,29 +42,25 @@ def register():
         return redirect(url_for('index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        artist.set_password(form.password.data)
-        db.session.add(artist)
+        artist_account.set_password(form.password.data)
+        db.session.add(artist_account)
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
-
-@app.route('/artist/<name>')
+@app.route('/artist_account/<name>')
 @login_required
-def artist(name):
+def artist_account(name):
     artist = Artist.query.filter_by(name=name).first_or_404()
-    performances = [
-        {'artist': artist, 'performance': 'location'},
-        {'artist': artist, 'performance': 'location'}
-    ]
-    return render_template('user.html', artist=artist, performances=performances)
+    performances = [{'performances': artist.artistPerformances}]
+    return render_template('artist_account.html', artist=artist, performances=performances)
 
-#TODO: language and extra fields
+#TODO: language (Artist instead of current_user) and extra fields
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
-    form = EditProfileForm()
+    form = EditProfile()
     if form.validate_on_submit():
         current_user.username = form.username.data
         current_user.about_me = form.about_me.data
@@ -77,15 +73,24 @@ def edit_profile():
     return render_template('edit_profile.html', title='Edit Profile',
                            form=form)
 
-def recommended():
+@app.route('/music_reccomend', methods=[ 'POST'])
+def music_recommend():
+    form = RecommendationForm() #cant work without prepopulated table
+    if form.validate_on_submit():
+        return  redirect(url_for('music_recommend_results.html')) #template does not exist yet
+    return render_template('music_recommend.html', title='Reccomendations', form=form)
 
-    return
-
-def performances():
-
-    return
+#format might cause some issues
+@app.route('/event_sign_up', methods=['GET', 'POST'])
+def event_sign_up():
+    form = event_sign_up()
+    if form.validate_on_submit():
+        new_performance = Performance(time=form.date.data, date=form.time.data, locationId=form.location.data)
+        db.session.add(new_performance)
+        db.session.commit()
+        flash('Your changes have been saved.')
+        return redirect(url_for('artist_account.html'))
+    return render_template('event_sign_up.html', title='Even Signup', form=form)
 
 def map():
-
-    return
-
+    return render_template('map.html', title='Map')

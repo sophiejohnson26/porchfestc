@@ -48,3 +48,6 @@ class EditProfile (FlaskForm):
     genre = StringField('Change Genres')  #could use autofill
     submit = SubmitField('Save')
 
+#needs review
+class RecommendationForm (FlaskForm):
+    genres = SelectMultipleField('Select Genres')
