@@ -35,6 +35,7 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
+
 #TODO: language and extra fields
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -49,12 +50,14 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
+
 @app.route('/artist_account/<name>')
 @login_required
 def artist_account(name):
     artist = Artist.query.filter_by(name=name).first_or_404()
     performances = [{'performances': artist.artistPerformances}]
     return render_template('artist_account.html', artist=artist, performances=performances)
+
 
 #TODO: language (Artist instead of current_user) and extra fields
 @app.route('/edit_profile', methods=['GET', 'POST'])
@@ -73,12 +76,14 @@ def edit_profile():
     return render_template('edit_profile.html', title='Edit Profile',
                            form=form)
 
+
 @app.route('/music_reccomend', methods=[ 'POST'])
 def music_recommend():
     form = RecommendationForm() #cant work without prepopulated table
     if form.validate_on_submit():
         return  redirect(url_for('music_recommend_results.html')) #template does not exist yet
     return render_template('music_recommend.html', title='Reccomendations', form=form)
+
 
 #format might cause some issues
 @app.route('/event_sign_up', methods=['GET', 'POST'])
