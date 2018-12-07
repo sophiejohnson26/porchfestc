@@ -33,18 +33,24 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    form = RegistrationForm()
+    x = Genre.query.filter(Genre.genre == form.name.data).first()
     if current_user.is_authenticated:
         return redirect(url_for('index'))
-    form = RegistrationForm()
     if form.validate_on_submit():
-        artist_account.set_password(form.password.data)
-        db.session.add(artist_account)
+        new_artist = Artist(artistName=form.artistName.data, password=form.password.data, email=form.email.data,
+                            bio=form.bio.data, artistGenre=form.artistGenre.data)
+        db.session.add(new_artist)
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
+        genres_in_form = []
+
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
+
 
 
 @app.route('/artist_account/<name>')

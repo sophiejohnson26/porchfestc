@@ -12,6 +12,7 @@ class LoginForm(FlaskForm):
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Sign In')
 
+
 class RecommendationForm(FlaskForm):
     genres = SelectMultipleField("Genres", coerce=int, choices=[])
     submit = SubmitField('Submit')
@@ -24,7 +25,7 @@ class RegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     artistName = StringField('Name', validators=[DataRequired()])
     bio = StringField('Biography')
-    genre = SelectMultipleField('Genres', validators=DataRequired) #could use autofill
+    genre = SelectMultipleField('Genres', validators=DataRequired)
     submit = SubmitField('Register')
 
     def validate_username(self, username):
