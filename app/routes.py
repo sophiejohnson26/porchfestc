@@ -37,26 +37,27 @@ def logout():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
+    genres = Genre.query.all()
+    form.genres.choices = [(a.id, a.genre) for a in genres]
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     if form.validate_on_submit():
-        new_artist = Artist(artistName=form.artistName.data, email=form.email.data,
-                            bio=form.bio.data)
+        new_artist = Artist(artistName=form.artistName.data, email=form.email.data, bio=form.bio.data)
         new_artist.set_password(form.password.data)
         db.session.add(new_artist)
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
-        #enres_in_form = []
+        #genres_in_form = []
 
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
 
-
-@app.route('/artist_account/<name>')
+#To do: have to get this route to work.
+@app.route('/artist_account/<name>', methods=['GET', 'POST'])
 @login_required
 def artist_account(name):
-    artist = Artist.query.filter_by(name=name).first_or_404()
+    artist = Artist.query.filter_by(artistName=name).first_or_404()
     performances = [{'performances': artist.artistPerformances}]
     return render_template('artist_account.html', artist=artist, performances=performances)
 
@@ -79,12 +80,15 @@ def edit_profile():
                            form=form)
 
 
-@app.route('/music_reccomend', methods=[ 'POST'])
+@app.route('/music_recommend', methods=['GET', 'POST'])
 def music_recommend():
-    form = RecommendationForm() #cant work without prepopulated table
+    form = RecommendationForm()
+    genres = Genre.query.all()
+    form.genres.choices = [(a.id, a.genre) for a in genres]
     if form.validate_on_submit():
-        return  redirect(url_for('music_recommend_results.html')) #template does not exist yet
-    return render_template('music_recommend.html', title='Reccomendations', form=form)
+        return redirect(url_for('music_recommend_results.html'))
+    return render_template('music_recommend.html', title='Recommendations', form=form)
+
 
 
 #format might cause some issues
@@ -92,17 +96,44 @@ def music_recommend():
 def event_sign_up():
     form = EventSignUp()
     if form.validate_on_submit():
-        new_location=Location(location=form.location.data)
+        new_location = Location(location=form.location.data)
         new_performance = Performance(time=form.date.data, date=form.time.data, locationId=new_location.id)
         db.session.add(new_performance)
         db.session.commit()
         for i in form.location.data:
-            new_perf= ArtistToPerformance(artistID=i,performanceID=new_performance.id)
+            new_perf = ArtistToPerformance(artistID=i, performanceID=new_performance.id)
             db.session.add(new_perf)
             db.session.commit()
         flash('Your changes have been saved.')
         return redirect(url_for('artist_account.html'))
     return render_template('event_sign_up.html', title='Even Signup', form=form)
 
+
+@app.route('/map', methods=['GET', 'POST'])
 def map():
     return render_template('map.html', title='Map')
+
+
+@app.route('/reset_db')
+def reset_db():
+    flash("Resetting database: deleting old data and repopulating with dummy data")
+    meta = db.metadata
+    for table in reversed(meta.sorted_tables):
+        print('Clear table {}'.format(table))
+        db.session.execute(table.delete())
+    db.session.commit()
+
+    g = Genre(genre="Folk")
+    db.session.add(g)
+    g2 = Genre(genre="Rock")
+    db.session.add(g2)
+    g3 = Genre(genre="Pop")
+    db.session.add(g3)
+    g4 = Genre(genre="R&B")
+    db.session.add(g4)
+    g5 = Genre(genre="Indie")
+    db.session.add(g5)
+    g6 = Genre(genre="Hip Hop")
+    db.session.add(g6)
+    db.session.commit()
+    return render_template("index.html")

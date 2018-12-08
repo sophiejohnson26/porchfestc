@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, SubmitField, PasswordField, BooleanField, TimeField, SelectMultipleField, SelectField
 from wtforms.validators import DataRequired, EqualTo, Email, ValidationError
-from wtforms.fields.html5 import DateField
+from wtforms.fields.html5 import DateTimeField
 from app import db
 from app.models import Artist, Performance, ArtistToPerformance, Location, Genre, ArtistToGenre
 
@@ -24,7 +24,7 @@ class RegistrationForm(FlaskForm):
     password2 = PasswordField('Re-enter Password', validators=[DataRequired(), EqualTo('password')])
     artistName = StringField('Name', validators=[DataRequired()])
     bio = StringField('Biography')
-    #add genre back in
+    genres = SelectMultipleField("Genres", coerce=int, choices=[])
     submit = SubmitField('Register')
 
 
@@ -35,7 +35,7 @@ class RegistrationForm(FlaskForm):
 
 
 class EventSignUp (FlaskForm):
-    date = DateField('Date', format='%Y-%m-%d', validators=DataRequired)
+    date = DateTimeField('Date', format='%Y-%m-%d', validators=DataRequired)
     time = TimeField('Time', validators=DataRequired)
     location = StringField('Location', validators=DataRequired)
     submit = SubmitField('Add New Event')
@@ -49,6 +49,6 @@ class EditProfile (FlaskForm):
     genre = StringField('Change Genres')  #could use autofill
     submit = SubmitField('Save')
 
-#needs review
-class RecommendationForm (FlaskForm):
-    genres = SelectMultipleField('Select Genres')
+
+
+

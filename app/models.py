@@ -68,7 +68,7 @@ class ArtistToPerformance(db.Model):
 class Genre(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     genre = db.Column(db.String(120))
-    artistGenre=db.relationship('ArtistToGenre')
+    artistGenre = db.relationship('ArtistToGenre')
 
 
 class ArtistToGenre(db.Model):
