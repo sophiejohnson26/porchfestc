@@ -46,7 +46,7 @@ class EditProfile (FlaskForm):
     email = StringField('Change Email')
     artistName = StringField('Change artist name')
     bio = StringField('Change Biography')
-    genre = StringField('Change Genres')  #could use autofill
+    genres = SelectMultipleField("Genres", coerce=int, choices=[])
     submit = SubmitField('Save')
 
 
