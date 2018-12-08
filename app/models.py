@@ -1,17 +1,17 @@
 from datetime import datetime
 from app import app, db, login
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
 import jwt
 
 
-class Artist(db.Model):
+class Artist(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     artistName = db.Column(db.String(64), index=True, unique=True)
     bio = db.Column(db.String(600))
     genreId = db.Column(db.Integer)
     artistPerformances= db.relationship('ArtistToPerformance')
     artistGenre = db.relationship('ArtistToGenre')
-    username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
 

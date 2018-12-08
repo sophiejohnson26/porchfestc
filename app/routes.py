@@ -17,7 +17,7 @@ def login():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        artist = Artist.query.filter_by(artist=form.name.data).first()
+        artist = Artist.query.filter_by(email=form.email.data).first()
         if artist is None or not artist.check_password(form.password.data):
             flash('Invalid username or password')
             return redirect(url_for('login'))
@@ -37,16 +37,16 @@ def logout():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
-    x = Genre.query.filter(Genre.genre == form.name.data).first()
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     if form.validate_on_submit():
-        new_artist = Artist(artistName=form.artistName.data, password=form.password.data, email=form.email.data,
-                            bio=form.bio.data, artistGenre=form.artistGenre.data)
+        new_artist = Artist(artistName=form.artistName.data, email=form.email.data,
+                            bio=form.bio.data)
+        new_artist.set_password(form.password.data)
         db.session.add(new_artist)
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
-        genres_in_form = []
+        #enres_in_form = []
 
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
@@ -90,11 +90,16 @@ def music_recommend():
 #format might cause some issues
 @app.route('/event_sign_up', methods=['GET', 'POST'])
 def event_sign_up():
-    form = event_sign_up()
+    form = EventSignUp()
     if form.validate_on_submit():
-        new_performance = Performance(time=form.date.data, date=form.time.data, locationId=form.location.data)
+        new_location=Location(location=form.location.data)
+        new_performance = Performance(time=form.date.data, date=form.time.data, locationId=new_location.id)
         db.session.add(new_performance)
         db.session.commit()
+        for i in form.location.data:
+            new_perf= ArtistToPerformance(artistID=i,performanceID=new_performance.id)
+            db.session.add(new_perf)
+            db.session.commit()
         flash('Your changes have been saved.')
         return redirect(url_for('artist_account.html'))
     return render_template('event_sign_up.html', title='Even Signup', form=form)

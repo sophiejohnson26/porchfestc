@@ -7,7 +7,7 @@ from app.models import Artist, Performance, ArtistToPerformance, Location, Genre
 
 
 class LoginForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Sign In')
@@ -19,19 +19,14 @@ class RecommendationForm(FlaskForm):
 
 
 class RegistrationForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     password2 = PasswordField('Re-enter Password', validators=[DataRequired(), EqualTo('password')])
-    email = StringField('Email', validators=[DataRequired(), Email()])
     artistName = StringField('Name', validators=[DataRequired()])
     bio = StringField('Biography')
-    genre = SelectMultipleField('Genres', validators=DataRequired)
+    #add genre back in
     submit = SubmitField('Register')
 
-    def validate_username(self, username):
-        user = Artist.query.filter_by(username=username.data).first()
-        if user is not None:
-            raise ValidationError('Use another username. This one is already taken.')
 
     def validate_email(self, email):
         user = Artist.query.filter_by(email=email.data).first()
@@ -43,6 +38,7 @@ class EventSignUp (FlaskForm):
     date = DateField('Date', format='%Y-%m-%d', validators=DataRequired)
     time = TimeField('Time', validators=DataRequired)
     location = StringField('Location', validators=DataRequired)
+    submit = SubmitField('Add New Event')
 
 
 class EditProfile (FlaskForm):
