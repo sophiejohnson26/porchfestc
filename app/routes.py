@@ -11,6 +11,7 @@ from app.models import *
 def index():
     return render_template('index.html')
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -27,6 +28,7 @@ def login():
             next_page = url_for('index')
         return redirect(next_page)
     return render_template('login.html', title='Sign In', form=form)
+
 
 @app.route('/logout')
 def logout():
@@ -47,7 +49,6 @@ def register():
         db.session.add(new_artist)
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
-        #genres_in_form = []
 
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
@@ -92,9 +93,7 @@ def music_recommend():
     return render_template('music_recommend.html', title='Recommendations', form=form)
 
 
-
-#format might cause some issues
-@app.route('/event_sign_up', methods=['GET', 'POST'])
+@app.route('/event_sign_up',  methods=['GET', 'POST'])
 def event_sign_up():
     form = EventSignUp()
     if form.validate_on_submit():

@@ -46,8 +46,8 @@ def load_user(id):
 
 class Performance(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    time = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    time = db.Column(db.Time, index=True)
+    date = db.Column(db.Date, index=True)
     locationId = db.Column(db.Integer, db.ForeignKey('location.id'))
     artistPerformances = db.relationship('ArtistToPerformance')
 

@@ -1,9 +1,9 @@
-from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, SubmitField, PasswordField, BooleanField, TimeField, SelectMultipleField, SelectField
-from wtforms.validators import DataRequired, EqualTo, Email, ValidationError
-from wtforms.fields.html5 import DateTimeField
+from flask_wtf import *
+from wtforms import *
+from wtforms.validators import *
+from wtforms.fields.html5 import *
 from app import db
-from app.models import Artist, Performance, ArtistToPerformance, Location, Genre, ArtistToGenre
+from app.models import *
 
 
 class LoginForm(FlaskForm):
@@ -35,9 +35,9 @@ class RegistrationForm(FlaskForm):
 
 
 class EventSignUp (FlaskForm):
-    date = DateTimeField('Date', format='%Y-%m-%d', validators=DataRequired)
-    time = TimeField('Time', validators=DataRequired)
-    location = StringField('Location', validators=DataRequired)
+    date = DateField('Date', format='%Y-%m-%d', validators=[DataRequired()])
+    time = TimeField('Time', format='%H-%m-%p', validators=[DataRequired()])
+    location = StringField('Location', validators=[DataRequired()])
     submit = SubmitField('Add New Event')
 
 
