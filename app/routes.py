@@ -44,10 +44,14 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     if form.validate_on_submit():
-        new_artist = Artist(artistName=form.artistName.data, email=form.email.data, bio=form.bio.data)
+        new_artist = Artist(artistName=form.artistName.data, email=form.email.data, bio=form.bio.data, genreId=form.genres.data)
         new_artist.set_password(form.password.data)
         db.session.add(new_artist)
         db.session.commit()
+        for i in form.genres.data:
+            artist_genre = ArtistToGenre(artistID=new_artist.id, genreID=i)
+            db.session.add(artist_genre)
+            db.session.commit()
         flash('Congratulations, you are now a registered user!')
 
         return redirect(url_for('login'))
@@ -55,10 +59,10 @@ def register():
 
 
 #To do: have to get this route to work.
-@app.route('/artist_account/<name>', methods=['GET', 'POST'])
+@app.route('/artist_account/<artistName>', methods=['GET', 'POST'])
 @login_required
-def artist_account(name):
-    artist = Artist.query.filter_by(artistName=name).first_or_404()
+def artist_account(artistName):
+    artist = Artist.query.filter_by(artistName==artistName).first()
     performances = [{'performances': artist.artistPerformances}]
     return render_template('artist_account.html', artist=artist, performances=performances)
 
@@ -71,15 +75,20 @@ def edit_profile():
     genres = Genre.query.all()
     form.genres.choices = [(a.id, a.genre) for a in genres]
     if form.validate_on_submit():
-        current_user.username = form.username.data
-        current_user.about_me = form.about_me.data
+        current_user.artistName = form.artistName.data
+        current_user.bio = form.bio.data
+        current_user.email = form.email.data
+        current_user.genreId = form.genres.data
         db.session.commit()
         flash('Your changes have been saved.')
         return redirect(url_for('edit_profile'))
     elif request.method == 'GET':
-        form.username.data = current_user.username
-        form.about_me.data = current_user.about_me
-    return render_template('edit_profile.html', title='Edit Profile',
+        form.artistName.data = current_user.artistName
+        form.bio.data = current_user.bio
+        form.email.data = current_user.email
+        form.genres.data = current_user.genreId
+
+    return render_template('edit_profile.html', artist=current_user, title='Edit Profile',
                            form=form)
 
 
@@ -98,7 +107,7 @@ def event_sign_up():
     form = EventSignUp()
     if form.validate_on_submit():
         new_location = Location(location=form.location.data)
-        new_performance = Performance(time=form.date.data, date=form.time.data, locationId=new_location.id)
+        new_performance = Performance(time=form.time.data, date=form.date.data, locationId=new_location.id)
         db.session.add(new_performance)
         db.session.commit()
         for i in form.location.data:

@@ -42,7 +42,6 @@ class EventSignUp (FlaskForm):
 
 
 class EditProfile (FlaskForm):
-    username = StringField('Change Username')
     email = StringField('Change Email')
     artistName = StringField('Change artist name')
     bio = StringField('Change Biography')
