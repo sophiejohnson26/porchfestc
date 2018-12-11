@@ -1,11 +1,16 @@
 from datetime import datetime
-from flask import render_template, flash, redirect, url_for, request
+from flask import Flask, render_template, flash, redirect, url_for, request
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.urls import url_parse
 from app import app, db
 from app.forms import *
 from app.models import *
 from app.email import send_password_reset_email
+from flask_googlemaps import GoogleMaps
+from flask_googlemaps import Map
+
+app = Flask(__name__, template_folder=".")
+GoogleMaps(app)
 
 @app.route('/')
 @app.route('/index')
@@ -139,10 +144,38 @@ def event_sign_up():
     return render_template('event_sign_up.html', title='Event Signup', form=form)
 
 
-@app.route('/map', methods=['GET', 'POST'])
+@app.route('/map',  methods=['GET', 'POST'])
 def map():
-    return render_template('map.html', title='Map')
+    # creating a map in the view
+    mymap = Map(
+        identifier="view-side",
+        lat=37.4419,
+        lng=-122.1419,
+        markers=[(37.4419, -122.1419)]
+    )
+    sndmap = Map(
+        identifier="sndmap",
+        lat=37.4419,
+        lng=-122.1419,
+        markers=[
+          {
+             'icon': 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
+             'lat': 37.4419,
+             'lng': -122.1419,
+             'infobox': "<b>Hello World</b>"
+          },
+          {
+             'icon': 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+             'lat': 37.4300,
+             'lng': -122.1400,
+             'infobox': "<b>Hello World from other place</b>"
+          }
+        ]
+    )
+    return render_template('map.html', mymap=mymap, sndmap=sndmap)
 
+if __name__ == "__main__":
+    app.run(debug=True)
 
 @app.route('/reset_db')
 def reset_db():

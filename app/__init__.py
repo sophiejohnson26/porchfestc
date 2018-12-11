@@ -8,6 +8,7 @@ from flask_login import LoginManager
 from flask_mail import Mail
 from flask_bootstrap import Bootstrap
 from config import Config
+from flask_googlemaps import GoogleMaps
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -17,6 +18,12 @@ login = LoginManager(app)
 login.login_view = 'login'
 mail = Mail(app)
 bootstrap = Bootstrap(app)
+
+#FROM https://github.com/rochacbruno/Flask-GoogleMaps
+# you can set key as config
+app.config['GOOGLEMAPS_KEY'] = "AIzaSyB_sh-Q6VLPgjiA8m8_tcQu66BaWIYa9Z4"
+# you can also pass the key here if you prefer
+GoogleMaps(app, key="AIzaSyB_sh-Q6VLPgjiA8m8_tcQu66BaWIYa9Z4")
 
 if not app.debug:
     if app.config['MAIL_SERVER']:
