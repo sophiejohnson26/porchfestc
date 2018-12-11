@@ -6,6 +6,9 @@
     <div class="col md-4">
         <h1>Artist Account: {{ artist.artistName }}</h1>
         {{ wtf.quick_form(form) }}
+
+        <p>Reset Password <a href="{{ url_for('reset_password') }}"></a> </p>
+
     </div>
 </div>
 

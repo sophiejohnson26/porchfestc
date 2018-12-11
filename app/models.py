@@ -9,9 +9,8 @@ class Artist(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     artistName = db.Column(db.String(64), index=True, unique=True)
     bio = db.Column(db.String(600))
-    genreId = db.Column(db.Integer)
+    genre = db.Column(db.String)
     artistPerformances= db.relationship('ArtistToPerformance')
-    artistGenre = db.relationship('ArtistToGenre')
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
 
@@ -63,19 +62,6 @@ class ArtistToPerformance(db.Model):
     performanceID = db.Column(db.Integer, db.ForeignKey('performance.id'), primary_key=True)
     artist = db.relationship('Artist')
     performance = db.relationship('Performance')
-
-
-class Genre(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    genre = db.Column(db.String(120))
-    artistGenre = db.relationship('ArtistToGenre')
-
-
-class ArtistToGenre(db.Model):
-    artistID = db.Column(db.Integer, db.ForeignKey('artist.id'), primary_key=True)
-    genreID = db.Column(db.Integer, db.ForeignKey('genre.id'), primary_key=True)
-    artist = db.relationship('Artist')
-    genre = db.relationship('Genre')
 
 
 

@@ -5,12 +5,12 @@ from werkzeug.urls import url_parse
 from app import app, db
 from app.forms import *
 from app.models import *
+from app.email import send_password_reset_email
 
 @app.route('/')
 @app.route('/index')
 def index():
     return render_template('index.html')
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -39,19 +39,13 @@ def logout():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
-    genres = Genre.query.all()
-    form.genres.choices = [(a.id, a.genre) for a in genres]
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     if form.validate_on_submit():
-        new_artist = Artist(artistName=form.artistName.data, email=form.email.data, bio=form.bio.data, genreId=form.genres.data)
+        new_artist = Artist(artistName=form.artistName.data, email=form.email.data, bio=form.bio.data, genre=form.genre.data)
         new_artist.set_password(form.password.data)
         db.session.add(new_artist)
         db.session.commit()
-        for i in form.genres.data:
-            artist_genre = ArtistToGenre(artistID=new_artist.id, genreID=i)
-            db.session.add(artist_genre)
-            db.session.commit()
         flash('Congratulations, you are now a registered user!')
 
         return redirect(url_for('login'))
@@ -72,13 +66,11 @@ def artist_account(artistName):
 @login_required
 def edit_profile():
     form = EditProfile()
-    genres = Genre.query.all()
-    form.genres.choices = [(a.id, a.genre) for a in genres]
     if form.validate_on_submit():
         current_user.artistName = form.artistName.data
         current_user.bio = form.bio.data
         current_user.email = form.email.data
-        current_user.genreId = form.genres.data
+        current_user.genre = form.genre.data
         db.session.commit()
         flash('Your changes have been saved.')
         return redirect(url_for('edit_profile'))
@@ -86,7 +78,7 @@ def edit_profile():
         form.artistName.data = current_user.artistName
         form.bio.data = current_user.bio
         form.email.data = current_user.email
-        form.genres.data = current_user.genreId
+        form.genre.data = current_user.genre
 
     return render_template('edit_profile.html', artist=current_user, title='Edit Profile',
                            form=form)
@@ -95,8 +87,6 @@ def edit_profile():
 @app.route('/music_recommend', methods=['GET', 'POST'])
 def music_recommend():
     form = RecommendationForm()
-    genres = Genre.query.all()
-    form.genres.choices = [(a.id, a.genre) for a in genres]
     if form.validate_on_submit():
         return redirect(url_for('music_recommend_results.html'))
     return render_template('music_recommend.html', title='Recommendations', form=form)
@@ -132,18 +122,33 @@ def reset_db():
         print('Clear table {}'.format(table))
         db.session.execute(table.delete())
     db.session.commit()
-
-    g = Genre(genre="Folk")
-    db.session.add(g)
-    g2 = Genre(genre="Rock")
-    db.session.add(g2)
-    g3 = Genre(genre="Pop")
-    db.session.add(g3)
-    g4 = Genre(genre="R&B")
-    db.session.add(g4)
-    g5 = Genre(genre="Indie")
-    db.session.add(g5)
-    g6 = Genre(genre="Hip Hop")
-    db.session.add(g6)
-    db.session.commit()
     return render_template("index.html")
+
+@app.route('/reset_password_request', methods=['GET', 'POST'])
+def reset_password_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = ResetPasswordRequestForm()
+    if form.validate_on_submit():
+        current_artist = Artist.query.filter_by(email=form.email.data).first()
+        if current_artist:
+            send_password_reset_email(current_artist)
+        flash('Check your email for the instructions to reset your password')
+        return redirect(url_for('login'))
+    return render_template('reset_password_request.html',
+                           title='Reset Password', form=form)
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    current_artist = Artist.verify_reset_password_token(token)
+    if not current_artist:
+        return redirect(url_for('index'))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        current_artist.set_password(form.password.data)
+        db.session.commit()
+        flash('Your password has been reset.')
+        return redirect(url_for('login'))
+    return render_template('reset_password.html', form=form)

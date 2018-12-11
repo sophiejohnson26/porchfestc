@@ -14,19 +14,18 @@ class LoginForm(FlaskForm):
 
 
 class RecommendationForm(FlaskForm):
-    genres = SelectMultipleField("Genres", coerce=int, choices=[])
+    genre = SelectField('Genres', choices=[("folk", "Folk"),('rock', "Rock"), ("hip_hop", "Hip Hop"),("pop", "Pop"), ("RB", "R&B"), ("indie", "Indie")])
     submit = SubmitField('Submit')
 
 
 class RegistrationForm(FlaskForm):
+    artistName = StringField('Name', validators=[DataRequired()])
+    bio = StringField('Biography')
+    genre = SelectField('Genres', choices=[("folk", "Folk"),('rock', "Rock"), ("hip_hop", "Hip Hop"),("pop", "Pop"), ("RB", "R&B"), ("indie", "Indie")])
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     password2 = PasswordField('Re-enter Password', validators=[DataRequired(), EqualTo('password')])
-    artistName = StringField('Name', validators=[DataRequired()])
-    bio = StringField('Biography')
-    genres = SelectMultipleField("Genres", coerce=int, choices=[])
     submit = SubmitField('Register')
-
 
     def validate_email(self, email):
         user = Artist.query.filter_by(email=email.data).first()
@@ -45,9 +44,16 @@ class EditProfile (FlaskForm):
     email = StringField('Change Email')
     artistName = StringField('Change artist name')
     bio = StringField('Change Biography')
-    genres = SelectMultipleField("Genres", coerce=int, choices=[])
+    genre = SelectField('Genres', choices=[("folk", "Folk"),('rock', "Rock"), ("hip_hop", "Hip Hop"),("pop", "Pop"), ("RB", "R&B"), ("indie", "Indie")])
     submit = SubmitField('Save')
 
+class ResetPasswordRequestForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Request Password Reset')
 
-
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('Password', validators=[DataRequired()])
+    password2 = PasswordField(
+        'Repeat Password', validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Request Password Reset')
 
