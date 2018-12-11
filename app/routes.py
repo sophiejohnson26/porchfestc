@@ -9,9 +9,6 @@ from app.email import send_password_reset_email
 from flask_googlemaps import GoogleMaps
 from flask_googlemaps import Map
 
-app = Flask(__name__, template_folder=".")
-GoogleMaps(app)
-
 @app.route('/')
 @app.route('/index')
 def index():
@@ -174,9 +171,6 @@ def map():
     )
     return render_template('map.html', mymap=mymap, sndmap=sndmap)
 
-if __name__ == "__main__":
-    app.run(debug=True)
-
 @app.route('/reset_db')
 def reset_db():
     flash("Resetting database: deleting old data and repopulating with dummy data")
@@ -217,3 +211,6 @@ def reset_password(token):
         flash('Your password has been reset.')
         return redirect(url_for('login'))
     return render_template('reset_password.html', form=form)
+
+if __name__ == "__main__":
+    app.run(debug=True)
