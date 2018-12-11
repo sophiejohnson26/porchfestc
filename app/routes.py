@@ -135,7 +135,7 @@ def event_sign_up():
         db.session.add(random)
         db.session.commit()
         flash('Your changes have been saved.')
-        return redirect(url_for('artist_account'))
+        return redirect(url_for('my_performances'))
     return render_template('event_sign_up.html', title='Event Signup', form=form)
 
 
