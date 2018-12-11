@@ -81,6 +81,11 @@ def performance_edit(performance):
         db.session.commit()
         flash('Your changes have been saved.')
         return redirect(url_for('my_perfomances'))
+    elif request.method == 'GET':
+        form.date.data=perf.date
+        form.time.data=perf.time
+
+
     return render_template('performance_edit.html', title='Performance Edit', form=form)
 
 
