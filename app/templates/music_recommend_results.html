@@ -4,7 +4,7 @@
     <h1>Here are your recommended artists!</h1>
 
     {% for x in recommended_list %}
-        <li><a href="{{ url_for('artist_account', name=x.artistName) }}">Artist:{{x.artistName }}</a></b></li>
+        <li><a href="{{ url_for('artist_account', name=x.artistName) }}">Artist: {{x.artistName }}</a></li>
        {% endfor %}
 
 

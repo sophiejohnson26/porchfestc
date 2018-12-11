@@ -63,33 +63,30 @@ def my_perfomances():
 @app.route('/artist_account/<name>')
 def artist_account(name):
     artist = Artist.query.filter_by(artistName=name).first()
+    events = current_user.artistPerformances
 
-    return render_template('artist_account.html', artist=artist)
+    return render_template('artist_account.html', artist=artist, event_list=events)
 
 
-@app.route('/performance_edit/<performance>')
+@app.route('/performance_edit/<performance>', methods=['GET', 'POST'])
 def performance_edit(performance):
-    perf=Performance.query.filter_by(id=performance)
-    form=EditPerfomance()
+    perf = Performance.query.filter_by(id=performance).first()
+    form = EditPerfomance()
     if form.validate_on_submit():
-        perf.date=form.date.data
-        perf.time=form.time.data
-        new_location=Location(perf.location.data)
+        perf.date = form.date.data
+        perf.time = form.time.data
+        new_location = Location(perf.locationId)
         db.session.add(new_location)
         db.session.commit()
-        perf.locationId=new_location.id
+        perf.locationId = new_location.id
         db.session.commit()
         flash('Your changes have been saved.')
-        return redirect(url_for('my_perfomances'))
+        return redirect(url_for('my_performances'))
     elif request.method == 'GET':
-        form.date.data=perf.date
-        form.time.data=perf.time
-
-
+        form.date.data = perf.date
+        form.time.data = perf.time
+        form.location.data = perf.locationId
     return render_template('performance_edit.html', title='Performance Edit', form=form)
-
-
-
 
 
 #TODO: language (Artist instead of current_user) and extra fields
@@ -113,7 +110,6 @@ def edit_profile():
 
     return render_template('edit_profile.html', artist=current_user, title='Edit Profile',
                            form=form)
-
 
 
 @app.route('/music_recommend', methods=['GET', 'POST'])
@@ -158,6 +154,7 @@ def reset_db():
     db.session.commit()
     return render_template("index.html")
 
+
 @app.route('/reset_password_request', methods=['GET', 'POST'])
 def reset_password_request():
     if current_user.is_authenticated:
@@ -171,6 +168,7 @@ def reset_password_request():
         return redirect(url_for('login'))
     return render_template('reset_password_request.html',
                            title='Reset Password', form=form)
+
 
 @app.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
