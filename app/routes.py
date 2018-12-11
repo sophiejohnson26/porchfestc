@@ -74,6 +74,12 @@ def artist_account(name):
 def performance_edit(performance):
     perf = Performance.query.filter_by(id=performance).first()
     form = EditPerfomance()
+    if form.delete.data:
+        perfId=ArtistToPerformance.query.filter_by(performanceID=perf.id).first()
+        db.session.delete(perf)
+        db.session.delete(perfId)
+        db.session.commit()
+        return redirect(url_for('my_performances'))
     if form.validate_on_submit():
         perf.date = form.date.data
         perf.time = form.time.data
