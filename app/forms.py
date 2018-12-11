@@ -34,8 +34,10 @@ class RegistrationForm(FlaskForm):
 
 
 class EventSignUp (FlaskForm):
-    date = DateField('Date', format='%Y-%m-%d', validators=[DataRequired()])
-    time = TimeField('Time', format='%H-%m-%p', validators=[DataRequired()])
+    date = DateTimeField('Date',validators=[validators.InputRequired()], format="%d%b%Y",
+                          default=datetime.utcnow)
+    time = DateTimeField( 'Time',validators=[validators.InputRequired()], format="%H:%M",
+                         default=datetime.utcnow)
     location = StringField('Location', validators=[DataRequired()])
     submit = SubmitField('Add New Event')
 
@@ -45,6 +47,14 @@ class EditProfile (FlaskForm):
     artistName = StringField('Change artist name')
     bio = StringField('Change Biography')
     genre = SelectField('Genres', choices=[("folk", "Folk"),('rock', "Rock"), ("hip_hop", "Hip Hop"),("pop", "Pop"), ("RB", "R&B"), ("indie", "Indie")])
+    submit = SubmitField('Save')
+
+class EditPerfomance(FlaskForm):
+    date = DateTimeField('Date', validators=[validators.InputRequired()], format="%d%b%Y",
+                         default=datetime.utcnow)
+    time = DateTimeField('Time', validators=[validators.InputRequired()], format="%H:%M",
+                         default=datetime.utcnow)
+    location = StringField('Location', validators=[DataRequired()])
     submit = SubmitField('Save')
 
 class ResetPasswordRequestForm(FlaskForm):

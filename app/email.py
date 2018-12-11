@@ -22,6 +22,6 @@ def send_password_reset_email(artist):
                sender=app.config['ADMINS'][0],
                recipients=[artist.email],
                text_body=render_template('email/reset_password.txt',
-                                         user=artist, token=token),
+                                         artist=artist, token=token),
                html_body=render_template('email/reset_password.html',
-                                         user=artist, token=token))
+                                         artist=artist, token=token))

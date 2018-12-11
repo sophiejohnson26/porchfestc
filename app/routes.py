@@ -53,12 +53,38 @@ def register():
 
 
 #To do: have to get this route to work.
-@app.route('/artist_account/<artistName>', methods=['GET', 'POST'])
+@app.route('/my_performances/', methods=['GET', 'POST'])
 @login_required
-def artist_account(artistName):
-    artist = Artist.query.filter_by(artistName==artistName).first()
-    performances = [{'performances': artist.artistPerformances}]
-    return render_template('artist_account.html', artist=artist, performances=performances)
+def my_perfomances():
+    events = current_user.artistPerformances
+
+    return render_template('my_performances.html', artist=current_user, event_list=events)
+
+@app.route('/artist_account/<name>')
+def artist_account(name):
+    artist = Artist.query.filter_by(artistName=name).first()
+
+    return render_template('artist_account.html', artist=artist)
+
+
+@app.route('/performance_edit/<performance>')
+def performance_edit(performance):
+    perf=Performance.query.filter_by(id=performance)
+    form=EditPerfomance()
+    if form.validate_on_submit():
+        perf.date=form.date.data
+        perf.time=form.time.data
+        new_location=Location(perf.location.data)
+        db.session.add(new_location)
+        db.session.commit()
+        perf.locationId=new_location.id
+        db.session.commit()
+        flash('Your changes have been saved.')
+        return redirect(url_for('my_perfomances'))
+    return render_template('performance_edit.html', title='Performance Edit', form=form)
+
+
+
 
 
 #TODO: language (Artist instead of current_user) and extra fields
@@ -84,11 +110,13 @@ def edit_profile():
                            form=form)
 
 
+
 @app.route('/music_recommend', methods=['GET', 'POST'])
 def music_recommend():
     form = RecommendationForm()
     if form.validate_on_submit():
-        return redirect(url_for('music_recommend_results.html'))
+        recs = Artist.query.filter_by(genre=form.genre.data).all()
+        return render_template('music_recommend_results.html', recommended_list=recs)
     return render_template('music_recommend.html', title='Recommendations', form=form)
 
 
@@ -97,16 +125,17 @@ def event_sign_up():
     form = EventSignUp()
     if form.validate_on_submit():
         new_location = Location(location=form.location.data)
+        db.session.add(new_location)
+        db.session.commit()
         new_performance = Performance(time=form.time.data, date=form.date.data, locationId=new_location.id)
         db.session.add(new_performance)
         db.session.commit()
-        for i in form.location.data:
-            new_perf = ArtistToPerformance(artistID=i, performanceID=new_performance.id)
-            db.session.add(new_perf)
-            db.session.commit()
+        random=ArtistToPerformance(artistID=current_user.id, performanceID=new_performance.id)
+        db.session.add(random)
+        db.session.commit()
         flash('Your changes have been saved.')
-        return redirect(url_for('artist_account.html'))
-    return render_template('event_sign_up.html', title='Even Signup', form=form)
+        return redirect(url_for('artist_account'))
+    return render_template('event_sign_up.html', title='Event Signup', form=form)
 
 
 @app.route('/map', methods=['GET', 'POST'])
