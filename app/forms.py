@@ -56,6 +56,7 @@ class EditPerfomance(FlaskForm):
                          default=datetime.utcnow)
     location = StringField('Location', validators=[DataRequired()])
     submit = SubmitField('Save')
+    delete = SubmitField('Delete')
 
 class ResetPasswordRequestForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
