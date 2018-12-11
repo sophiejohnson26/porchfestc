@@ -55,7 +55,7 @@ def register():
 #To do: have to get this route to work.
 @app.route('/my_performances/', methods=['GET', 'POST'])
 @login_required
-def my_perfomances():
+def my_performances():
     events = current_user.artistPerformances
 
     return render_template('my_performances.html', artist=current_user, event_list=events)
@@ -75,7 +75,7 @@ def performance_edit(performance):
     if form.validate_on_submit():
         perf.date = form.date.data
         perf.time = form.time.data
-        new_location = Location(perf.locationId)
+        new_location = Location(location=form.location.data)
         db.session.add(new_location)
         db.session.commit()
         perf.locationId = new_location.id
