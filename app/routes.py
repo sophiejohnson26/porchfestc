@@ -63,10 +63,11 @@ def register():
 def my_performances():
     events = current_user.artistPerformances
     artperf = ArtistToPerformance.query.filter_by(artistID=current_user.id).first()
-    perf=Performance.query.filter_by(id=artperf.performanceID).first()
-    locations=Location.query.filter_by(id=perf.id).first()
+    perf = Performance.query.filter_by(id=artperf.performanceID).first()
+    locations = Location.query.filter_by(id=perf.id).all()
 
-    return render_template('my_performances.html', artist=current_user, event_list=events, locname=locations)
+
+    return render_template('my_performances.html', artist=current_user, event_list=events, name=locations)
 
 @app.route('/artist_account/<name>')
 def artist_account(name):
@@ -177,33 +178,31 @@ def event_sign_up():
 @app.route('/map',  methods=['GET', 'POST'])
 def map():
     # creating a map in the view
+    locations = Location.query.all()
+    performances = Performance.query.all()
     mymap = Map(
         identifier="view-side",
-        lat=37.4419,
-        lng=-122.1419,
-        markers=[(37.4419, -122.1419)]
-    )
-    sndmap = Map(
-        identifier="sndmap",
-        lat=37.4419,
-        lng=-122.1419,
-        markers=[
-          {
-             'icon': 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
-             'lat': 37.4419,
-             'lng': -122.1419,
-             'infobox': "<b>Hello World</b>"
-          },
-          {
-             'icon': 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
-             'lat': 37.4300,
-             'lng': -122.1400,
-             'infobox': "<b>Hello World from other place</b>"
-          }
-        ]
+        lat=42.4440,
+        lng=76.5019,
+        markers=[(42.4440, 76.5019)]
     )
 
-    #locations = Location.query.all()
+    for x in locations:
+        sndmap = Map(
+            identifier="sndmap",
+            lat=42.4440,
+            lng=-76.5019,
+            markers=[
+                {
+                    'icon': 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
+                    'lat': x.lat,
+                    'lng': x.long,
+                    'infobox': x.name
+                }
+            ]
+        )
+
+
 
 
     return render_template('map.html', mymap=mymap, sndmap=sndmap)
