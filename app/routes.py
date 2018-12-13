@@ -63,11 +63,10 @@ def register():
 def my_performances():
     events = current_user.artistPerformances
     artperf = ArtistToPerformance.query.filter_by(artistID=current_user.id).first()
-    perf = Performance.query.filter_by(id=artperf.performanceID).first()
-    locations = Location.query.filter_by(id=perf.id).all()
+    perf = Performance.query.filter_by(id=artperf.performanceID).all()
+    #locations = Location.query.filter_by(id=perf.id).all()
 
-
-    return render_template('my_performances.html', artist=current_user, event_list=events, name=locations)
+    return render_template('my_performances.html', artist=current_user, event_list=events, location=perf)
 
 @app.route('/artist_account/<name>')
 def artist_account(name):
@@ -186,6 +185,7 @@ def map():
         lng=76.5019,
         markers=[(42.4440, 76.5019)]
     )
+
 
     for x in locations:
         sndmap = Map(

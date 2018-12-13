@@ -50,6 +50,7 @@ class Performance(db.Model):
     date = db.Column(db.DateTime, index=True)
     locationId = db.Column(db.Integer, db.ForeignKey('location.id'))
     artistPerformances = db.relationship('ArtistToPerformance')
+    performanceloc = db.relationship('Location')
 
 
 class Location(db.Model):
@@ -57,6 +58,7 @@ class Location(db.Model):
     name=db.Column(db.String, index=True)
     long = db.Column(db.Float, index=True)
     lat = db.Column(db.Float, index=True)
+    performance=db.relationship('Performance')
 
 
 
