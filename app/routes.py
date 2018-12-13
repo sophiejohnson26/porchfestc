@@ -9,6 +9,8 @@ from app.email import send_password_reset_email
 from flask_googlemaps import GoogleMaps
 from flask_googlemaps import Map
 from geopy.geocoders import Nominatim
+import googlemaps
+import json
 
 @app.route('/')
 @app.route('/index')
@@ -134,16 +136,19 @@ def music_recommend():
 def event_sign_up():
     form = EventSignUp()
     if form.validate_on_submit():
+        gmaps = googlemaps.Client(key='AIzaSyBfXrQesv7TMJEVphSyNN-j7XSS32w3h1c')
 
         address = form.location.data
 
-        geolocater = Nominatim(user_agent="porchfestc", scheme="https")
-        location = geolocater.geocode(address)
-        coordinates = Location(long=location.longitude, lat=location.latitude)
+        location = gmaps.geocode('1600 Amphitheatre Parkway, Mountain View, CA')
+
+        loc1=[i['geometry']['location']['lat'] for i in location]
+        loc2 = [i['geometry']['location']['lng'] for i in location]
+        coordinates = Location(lat=loc1[0], long=loc2[0])
         db.session.add(coordinates)
         db.session.commit()
 
-        new_performance = Performance(time=form.time.data, date=form.date.data, locationId=coordinates)
+        new_performance = Performance(time=form.time.data, date=form.date.data, locationId=coordinates.id)
         db.session.add(new_performance)
         db.session.commit()
 
