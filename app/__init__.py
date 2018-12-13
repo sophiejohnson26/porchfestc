@@ -9,10 +9,8 @@ from flask_mail import Mail
 from flask_bootstrap import Bootstrap
 from config import Config
 from flask_googlemaps import GoogleMaps
-from geopy import *
-from geopy.geocoders.options.default_ssl_context import *
-
-
+from geopy.geocoders import *
+#from geopy.geocoders.options.default_ssl_context import *
 
 app = Flask(__name__)
 app.config.from_object(Config)

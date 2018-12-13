@@ -137,8 +137,7 @@ def event_sign_up():
 
         address = form.location.data
 
-
-        geolocater = Nominatim(user_agent="johnson.sophie26@gmail.com")
+        geolocater = Nominatim(user_agent="porchfestc", scheme="https")
         location = geolocater.geocode(address)
         coordinates = Location(long=location.longitude, lat=location.latitude)
         db.session.add(coordinates)
