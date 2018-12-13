@@ -62,12 +62,16 @@ def register():
 @login_required
 def my_performances():
     events = current_user.artistPerformances
+    artperf = ArtistToPerformance.query.filter_by(artistID=current_user.id).first()
+    perf=Performance.query.filter_by(id=artperf.performanceID).first()
+    locations=Location.query.filter_by(id=perf.id).first()
 
-    return render_template('my_performances.html', artist=current_user, event_list=events)
+    return render_template('my_performances.html', artist=current_user, event_list=events, locname=locations)
 
 @app.route('/artist_account/<name>')
 def artist_account(name):
     artist = Artist.query.filter_by(artistName=name).first()
+
     events = current_user.artistPerformances
 
     return render_template('artist_account.html', artist=artist, event_list=events)
@@ -86,17 +90,26 @@ def performance_edit(performance):
     if form.validate_on_submit():
         perf.date = form.date.data
         perf.time = form.time.data
-        new_location = Location(location=form.location.data)
-        db.session.add(new_location)
+        gmaps = googlemaps.Client(key='AIzaSyBfXrQesv7TMJEVphSyNN-j7XSS32w3h1c')
+
+        address = form.location.data
+
+        location = gmaps.geocode(address)
+
+        loc1 = [i['geometry']['location']['lat'] for i in location]
+        loc2 = [i['geometry']['location']['lng'] for i in location]
+        coordinates = Location(name=address,lat=loc1[0], long=loc2[0])
+        db.session.add(coordinates)
         db.session.commit()
-        perf.locationId = new_location.id
+        perf.locationId = coordinates.id
         db.session.commit()
         flash('Your changes have been saved.')
         return redirect(url_for('my_performances'))
     elif request.method == 'GET':
         form.date.data = perf.date
         form.time.data = perf.time
-        form.location.data = perf.locationId
+        location = Location.query.filter_by(id=perf.locationId).first()
+        form.location.data = location.name
     return render_template('performance_edit.html', title='Performance Edit', form=form)
 
 
@@ -140,11 +153,11 @@ def event_sign_up():
 
         address = form.location.data
 
-        location = gmaps.geocode('1600 Amphitheatre Parkway, Mountain View, CA')
+        location = gmaps.geocode(address)
 
         loc1=[i['geometry']['location']['lat'] for i in location]
         loc2 = [i['geometry']['location']['lng'] for i in location]
-        coordinates = Location(lat=loc1[0], long=loc2[0])
+        coordinates = Location(name=address, lat=loc1[0], long=loc2[0])
         db.session.add(coordinates)
         db.session.commit()
 

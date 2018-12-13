@@ -54,6 +54,7 @@ class Performance(db.Model):
 
 class Location(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    name=db.Column(db.String, index=True)
     long = db.Column(db.Float, index=True)
     lat = db.Column(db.Float, index=True)
 
