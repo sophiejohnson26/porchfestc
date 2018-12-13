@@ -54,8 +54,9 @@ class Performance(db.Model):
 
 class Location(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), index=True, unique=True)
-    location = db.Column(db.String(64))
+    long = db.Column(db.Float, index=True)
+    lat = db.Column(db.Float, index=True)
+
 
 
 class ArtistToPerformance(db.Model):

@@ -8,6 +8,7 @@ from app.models import *
 from app.email import send_password_reset_email
 from flask_googlemaps import GoogleMaps
 from flask_googlemaps import Map
+from geopy.geocoders import Nominatim
 
 @app.route('/')
 @app.route('/index')
@@ -133,15 +134,24 @@ def music_recommend():
 def event_sign_up():
     form = EventSignUp()
     if form.validate_on_submit():
-        new_location = Location(location=form.location.data)
-        db.session.add(new_location)
+
+        address = form.location.data
+
+
+        geolocater = Nominatim(user_agent="johnson.sophie26@gmail.com")
+        location = geolocater.geocode(address)
+        coordinates = Location(long=location.longitude, lat=location.latitude)
+        db.session.add(coordinates)
         db.session.commit()
-        new_performance = Performance(time=form.time.data, date=form.date.data, locationId=new_location.id)
+
+        new_performance = Performance(time=form.time.data, date=form.date.data, locationId=coordinates)
         db.session.add(new_performance)
         db.session.commit()
+
         random=ArtistToPerformance(artistID=current_user.id, performanceID=new_performance.id)
         db.session.add(random)
         db.session.commit()
+
         flash('Your changes have been saved.')
         return redirect(url_for('my_performances'))
     return render_template('event_sign_up.html', title='Event Signup', form=form)
@@ -175,6 +185,10 @@ def map():
           }
         ]
     )
+
+    #locations = Location.query.all()
+
+
     return render_template('map.html', mymap=mymap, sndmap=sndmap)
 
 @app.route('/reset_db')
