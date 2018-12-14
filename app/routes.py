@@ -69,10 +69,12 @@ def my_performances():
 @app.route('/artist_account/<name>')
 def artist_account(name):
     artist = Artist.query.filter_by(artistName=name).first()
+    artperf = ArtistToPerformance.query.filter_by(artistID=artist.id).first()
+    perf = Performance.query.filter_by(id=artperf.performanceID).all()
 
-    events = current_user.artistPerformances
+    events = artist.artistPerformances
 
-    return render_template('artist_account.html', artist=artist, event_list=events)
+    return render_template('artist_account.html', artist=artist, event_list=events, location=perf)
 
 
 @app.route('/performance_edit/<performance>', methods=['GET', 'POST'])
