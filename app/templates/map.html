@@ -14,35 +14,32 @@
  <div id="map" style="width: 500px; height: 400px;"></div>
 
  <script type="text/javascript">
+   var locations = {{ locations2 }};
 
-   var locationsraw = {{ locations2|tojson|safe }};
-   var locations = locationsraw;
+    var map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 10,
+      center: new google.maps.LatLng(42.4199351, -76.4969643),
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    });
 
-   var map = new google.maps.Map(document.getElementById('map'), {
-     zoom: 10,
-     center: new google.maps.LatLng(42.4440, -76.5019),
-     mapTypeId: google.maps.MapTypeId.ROADMAP
-   });
+    var infowindow = new google.maps.InfoWindow();
 
-   var infowindow = new google.maps.InfoWindow();
-   var point, marker, i;
-   var length = locations.length;
+    var marker, i;
 
-    for (i = 0; i < length; i+2) {
-        point = [locations[i] , locations[i+1]];
-        marker = new google.maps.Marker({
-            position: point,
-            map: map,
-            title: "hullo world!"
-        });
-        marker.setMap(map);
+    for (i = 0; i < locations.length; i++) {
+      marker = new google.maps.Marker({
+        position: new google.maps.LatLng(locations[i][0], locations[i][1]),
+        map: map
+      });
 
-        google.maps.event.addListener(marker, 'click', (function(marker, i) {
-        return function() {
-            infowindow.setContent(locations[i]);
-            infowindow.open(map, marker);
-            }
-        })(marker, i));
+      {#google.maps.event.addListener(marker, 'click', (function(marker, i) {#}
+      {#  return function() {#}
+      {#    infowindow.setContent(perfomances2[i]);#}
+      {#    infowindow.open(map, marker);#}
+      {#  }#}
+
+    }
+
 
  </script>
 </body>

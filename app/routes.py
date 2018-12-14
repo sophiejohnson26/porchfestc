@@ -6,9 +6,8 @@ from app import app, db
 from app.forms import *
 from app.models import *
 from app.email import send_password_reset_email
-from flask_googlemaps import Map
 import googlemaps
-import json
+
 
 
 @app.route('/')
@@ -67,37 +66,13 @@ def my_performances():
 
     return render_template('my_performances.html', artist=current_user, event_list=events, location=perf)
 
-
 @app.route('/artist_account/<name>')
 def artist_account(name):
-   artist = Artist.query.filter_by(artistName=name).first()
+    artist = Artist.query.filter_by(artistName=name).first()
 
-   events = current_user.artistPerformances
-   locations = Location.query.all()
+    events = current_user.artistPerformances
 
-   mymap = Map(
-       identifier="view-side",
-       lat=42.4440,
-       lng=76.5019,
-       markers=[(42.4440, 76.5019)]
-   )
-
-   for x in locations:
-       sndmap = Map(
-           identifier="sndmap",
-           lat=42.4440,
-           lng=-76.5019,
-           markers=[
-               {
-                   'icon': 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
-                   'lat': x.lat,
-                   'lng': x.long,
-                   'infobox': x.name
-               }
-           ]
-       )
-
-   return render_template('artist_account.html', artist=artist, event_list=events, mymap=mymap, sndmap=sndmap)
+    return render_template('artist_account.html', artist=artist, event_list=events)
 
 
 @app.route('/performance_edit/<performance>', methods=['GET', 'POST'])
@@ -202,14 +177,42 @@ def map():
    # creating a map in the view
    location_list = Location.query.all()
    locations = []
-
    for y in location_list:
-      locations.append(y.lat)
-      locations.append(y.long)
+       random=[]
+       for x in range(1):
+           random.append(y.lat)
+           random.append(y.long)
+           locations.append(random)
 
-   return render_template('map.html', locations2=jsonify(locations))
+   perfomances=Performance.query.all()
+   performancebyartist= []
 
-    # location_list = Location.query.all()
+   for y in perfomances:
+       random=[]
+       for x in range(1):
+           random.append(y.time)
+           performancebyartist.append(random)
+
+
+
+
+
+
+
+
+
+
+
+
+
+       # random={"name": y.name, "lat": y.lat, "long": y.long, "id": y.id}
+       # locations.append(random)
+
+
+   # locations1 = jsonify(locations)
+   return render_template('map.html', locations2=locations, length=len(locations), perfomances2=performancebyartist)
+
+      # location_list = Location.query.all()
    #
    # locations = []
    #
@@ -217,7 +220,7 @@ def map():
    #
    #     #add something that creates new location entry
    #      for y in locations:
-    #add each entry within the location
+#add each entry within the location
    # locations = jsonify(locations)
    # performances = Performance.query.all()
    # performances = jsonify(performances)
