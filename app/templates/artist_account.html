@@ -2,11 +2,23 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 {% block app_content %}
 <h1>Artist Account:  {{ artist.artistName }}</h1>
-    <h2>Artist bio:  {{ artist.bio }}</h2>
-    <h2>Artist genre:  {{ artist.genre }}</h2>
-    <h1>Performances</h1>
-     {% for x in event_list %}
-        <li><b>Time:{{x.performance.time }}</b> Date:  <b>{{ x.performance.date }}</b> Location: <b>{{ x.performance.locationId }}</b></li>
-       {% endfor %}
+   <h2>Artist bio:  {{ artist.bio }}</h2>
+   <h2>Artist genre:  {{ artist.genre }}</h2>
+   <h1>Performances</h1>
+    {% for x in event_list %}
+       <li><b>Time:{{x.performance.time }}</b> Date:  <b>{{ x.performance.date }}</b> Location: <b>{{ x.performance.locationId }}</b></li>
+      {% endfor %}
+
+
+
+   <head>
+           {{"decoupled-map"|googlemap_js(42.4440, -76.5019, markers=[(42.4440, -76.5019)])}}
+           {{mymap.js}}
+           {{sndmap.js}}
+   </head>
+   <body>
+       {{sndmap.html}}
+
+   </body>
 
 {% endblock %}

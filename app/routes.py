@@ -6,8 +6,9 @@ from app import app, db
 from app.forms import *
 from app.models import *
 from app.email import send_password_reset_email
+from flask_googlemaps import Map
 import googlemaps
-
+import json
 
 
 @app.route('/')
@@ -66,13 +67,37 @@ def my_performances():
 
     return render_template('my_performances.html', artist=current_user, event_list=events, location=perf)
 
+
 @app.route('/artist_account/<name>')
 def artist_account(name):
-    artist = Artist.query.filter_by(artistName=name).first()
+   artist = Artist.query.filter_by(artistName=name).first()
 
-    events = current_user.artistPerformances
+   events = current_user.artistPerformances
+   locations = Location.query.all()
 
-    return render_template('artist_account.html', artist=artist, event_list=events)
+   mymap = Map(
+       identifier="view-side",
+       lat=42.4440,
+       lng=76.5019,
+       markers=[(42.4440, 76.5019)]
+   )
+
+   for x in locations:
+       sndmap = Map(
+           identifier="sndmap",
+           lat=42.4440,
+           lng=-76.5019,
+           markers=[
+               {
+                   'icon': 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
+                   'lat': x.lat,
+                   'lng': x.long,
+                   'infobox': x.name
+               }
+           ]
+       )
+
+   return render_template('artist_account.html', artist=artist, event_list=events, mymap=mymap, sndmap=sndmap)
 
 
 @app.route('/performance_edit/<performance>', methods=['GET', 'POST'])
@@ -178,20 +203,13 @@ def map():
    location_list = Location.query.all()
    locations = []
 
-
-
-
-
-
    for y in location_list:
-       random={"name": y.name, "lat": y.lat, "long": y.long, "id": y.id}
-       locations.append(random)
+      locations.append(y.lat)
+      locations.append(y.long)
 
+   return render_template('map.html', locations2=jsonify(locations))
 
-   # locations1 = jsonify(locations)
-   return render_template('map.html', locations2=[-76.4969643, 42.4199351], length=len(locations))
-
-      # location_list = Location.query.all()
+    # location_list = Location.query.all()
    #
    # locations = []
    #
@@ -199,7 +217,7 @@ def map():
    #
    #     #add something that creates new location entry
    #      for y in locations:
-#add each entry within the location
+    #add each entry within the location
    # locations = jsonify(locations)
    # performances = Performance.query.all()
    # performances = jsonify(performances)
