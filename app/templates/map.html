@@ -1,19 +1,59 @@
 {% extends "base.html" %}
-
+{% import 'bootstrap/wtf.html' as wtf %}
 {% block app_content %}
 <!DOCTYPE html>
-    <html>
-    <head>
-           {{"decoupled-map"|googlemap_js(42.4440, -76.5019, markers=[(42.4440, -76.5019)])}}
-            {{mymap.js}}
-            {{sndmap.js}}
-    </head>
-    <body>
+<html>
+<head>
+ <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+ <title>Google Maps Multiple Markers</title>
+ <script src="http://maps.google.com/maps/api/js?key=AIzaSyBfXrQesv7TMJEVphSyNN-j7XSS32w3h1c"
+         type="text/javascript"></script>
+</head>
+<body>
+<h1>Here is a map!</h1>
+ <div id="map" style="width: 500px; height: 400px;"></div>
 
-        <h2> Second map generated in view</h2>
-        <h3> Example for different icons in multiple markers with infoboxes</h3>
-        {{sndmap.html}}
+ <script type="text/javascript">
+   var locations;
+   locations={{ locations2|tojson }};
 
-    </body>
+   {#var locations = [#}
+   {#   ['Bondi Beach', -33.890542, 151.274856, 4],#}
+   {#   ['Coogee Beach', -33.923036, 151.259052, 5],#}
+   {#   ['Cronulla Beach', -34.028249, 151.157507, 3],#}
+   {#   ['Manly Beach', -33.80010128657071, 151.28747820854187, 2],#}
+   {#   ['Maroubra Beach', -33.950198, 151.259302, 1]#}
+   {# ];#}
+
+
+   var map = new google.maps.Map(document.getElementById('map'), {
+     zoom: 10,
+     center: new google.maps.LatLng(42.4440, -76.5019),
+     mapTypeId: google.maps.MapTypeId.ROADMAP
+   });
+
+   {#var infowindow = new google.maps.InfoWindow();#}
+
+   var marker, i;
+
+
+   for (i = 0; i < length; i++) {
+       marker = new google.maps.Marker({
+           position: new google.maps.LatLng(locations[i], locations[i]),
+           map: map
+       });
+   }
+   {# #}
+
+     {#google.maps.event.addListener(marker, 'click', (function(marker, i) {#}
+     {#  return function() {#}
+     {#    infowindow.setContent(locations[i][0]);#}
+     {#    infowindow.open(map, marker);#}
+     {#  }#}
+
+
+ </script>
+</body>
 </html>
+
 {% endblock %}

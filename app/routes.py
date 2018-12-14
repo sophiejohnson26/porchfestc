@@ -1,16 +1,14 @@
 from datetime import datetime
-from flask import Flask, render_template, flash, redirect, url_for, request
+from flask import Flask, render_template, flash, redirect, url_for, request, jsonify
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.urls import url_parse
 from app import app, db
 from app.forms import *
 from app.models import *
 from app.email import send_password_reset_email
-from flask_googlemaps import GoogleMaps
-from flask_googlemaps import Map
-from geopy.geocoders import Nominatim
 import googlemaps
-import json
+
+
 
 @app.route('/')
 @app.route('/index')
@@ -176,36 +174,58 @@ def event_sign_up():
 
 @app.route('/map',  methods=['GET', 'POST'])
 def map():
-    # creating a map in the view
-    locations = Location.query.all()
-    performances = Performance.query.all()
-    mymap = Map(
-        identifier="view-side",
-        lat=42.4440,
-        lng=76.5019,
-        markers=[(42.4440, 76.5019)]
-    )
-
-
-    for x in locations:
-        sndmap = Map(
-            identifier="sndmap",
-            lat=42.4440,
-            lng=-76.5019,
-            markers=[
-                {
-                    'icon': 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
-                    'lat': x.lat,
-                    'lng': x.long,
-                    'infobox': x.name
-                }
-            ]
-        )
+   # creating a map in the view
+   location_list = Location.query.all()
+   locations = []
 
 
 
 
-    return render_template('map.html', mymap=mymap, sndmap=sndmap)
+
+
+   for y in location_list:
+       random={"name": y.name, "lat": y.lat, "long": y.long, "id": y.id}
+       locations.append(random)
+
+
+   # locations1 = jsonify(locations)
+   return render_template('map.html', locations2=[-76.4969643, 42.4199351], length=len(locations))
+
+      # location_list = Location.query.all()
+   #
+   # locations = []
+   #
+   # for x in locations:
+   #
+   #     #add something that creates new location entry
+   #      for y in locations:
+#add each entry within the location
+   # locations = jsonify(locations)
+   # performances = Performance.query.all()
+   # performances = jsonify(performances)
+   # artists = Artist.query.all()
+   # #mymap = Map(
+       #identifier="view-side",
+       #lat=42.4440,
+       #lng=76.5019,
+       #markers=[(42.4440, 76.5019)]
+   #)
+
+   #sndmap = Map(
+       #identifier="sndmap",
+       #lat=42.4440,
+       #lng=-76.5019,
+       #markers=[
+           #{
+               #'icon': 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
+               #'lat': x.lat,
+               #'lng': x.long,
+               #'infobox': x.name
+           #}
+       #]
+   #)
+
+
 
 @app.route('/reset_db')
 def reset_db():
