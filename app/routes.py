@@ -190,29 +190,12 @@ def map():
    performancebyartist= []
 
    for y in perfomances:
-       random=[]
-       for x in range(1):
-           random.append(y.time)
-           performancebyartist.append(random)
-
-
-
-
-
-
-
-
-
-
-
-
+       performancebyartist.append(y.time.strftime('%m/%d/%Y/%H/%M'))
 
        # random={"name": y.name, "lat": y.lat, "long": y.long, "id": y.id}
        # locations.append(random)
 
-
-   # locations1 = jsonify(locations)
-   return render_template('map.html', locations2=locations, length=len(locations), perfomances2=performancebyartist)
+   return render_template('map.html', locations2=locations, length=len(locations), perfomances2=performancebyartist, perfLeng = len(performancebyartist))
 
       # location_list = Location.query.all()
    #

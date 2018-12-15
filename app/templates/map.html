@@ -15,6 +15,7 @@
 
  <script type="text/javascript">
    var locations = {{ locations2 }};
+   var perfomances = {{ performances2}} ;
 
     var map = new google.maps.Map(document.getElementById('map'), {
       zoom: 10,
@@ -22,9 +23,8 @@
       mapTypeId: google.maps.MapTypeId.ROADMAP
     });
 
-    var infowindow = new google.maps.InfoWindow();
-
     var marker, i;
+    var infowindow;
 
     for (i = 0; i < locations.length; i++) {
       marker = new google.maps.Marker({
@@ -32,14 +32,16 @@
         map: map
       });
 
-      {#google.maps.event.addListener(marker, 'click', (function(marker, i) {#}
-      {#  return function() {#}
-      {#    infowindow.setContent(perfomances2[i]);#}
-      {#    infowindow.open(map, marker);#}
-      {#  }#}
-
+      google.maps.event.addListener(marker, 'click', (function(marker, i) {
+        return function() {
+            infowindow = new google.maps.InfoWindow({
+                content: perfomances[i]
+            });
+            infowindow.setContent();
+            infowindow.open(map, marker);
+            }
+        }));
     }
-
 
  </script>
 </body>
