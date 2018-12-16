@@ -2,8 +2,13 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 {% block app_content %}
 <h1>My Performance: {{ artist.artistName }}</h1>
-    {% for x in event_list %}
-        <li><a href="{{ url_for('performance_edit', performance=x.performance.id) }}"><b>Time:{{x.performance.time }}</b> Date:  <b>{{ x.performance.date }}</b> Location: <b>{{ x.performance.performanceloc.name }}</b></a></li>
-       {% endfor %}
+    {%  if length==0 %}
+        <p>you have no performances</p>
+
+    {% else %}
+           {% for x in event_list %}
+          <li><a href="{{ url_for('performance_edit', performance=x.performanceRel.id) }}"><b>Time:{{x.performanceRel.time }}</b> Date:  <b>{{ x.performanceRel.date }}</b> Location: <b>{{ x.performanceRel.performanceloc.name }}</b></a></li>
+            {% endfor %}
+    {% endif %}
 
 {% endblock %}

@@ -1,4 +1,5 @@
-from datetime import datetime
+import json
+import datetime
 from flask import Flask, render_template, flash, redirect, url_for, request, jsonify
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.urls import url_parse
@@ -59,9 +60,14 @@ def register():
 @app.route('/my_performances/', methods=['GET', 'POST'])
 @login_required
 def my_performances():
-    events = current_user.artistPerformances
+    events = current_user.artistPerformances1
     artperf = ArtistToPerformance.query.filter_by(artistID=current_user.id).first()
-    perf = Performance.query.filter_by(id=artperf.performanceID).all()
+    if artperf!=None:
+        perf = Performance.query.filter_by(id=artperf.performanceID).all()
+    else:
+        perf="you have no performances"
+
+
     #locations = Location.query.filter_by(id=perf.id).all()
 
     return render_template('my_performances.html', artist=current_user, event_list=events, location=perf)
@@ -70,11 +76,14 @@ def my_performances():
 def artist_account(name):
     artist = Artist.query.filter_by(artistName=name).first()
     artperf = ArtistToPerformance.query.filter_by(artistID=artist.id).first()
-    perf = Performance.query.filter_by(id=artperf.performanceID).all()
+    if artperf!=None:
+        perf = Performance.query.filter_by(id=artperf.performanceID).all()
+    else:
+        perf="you have no performances"
 
-    events = artist.artistPerformances
+    events = artist.artistPerformances1
 
-    return render_template('artist_account.html', artist=artist, event_list=events, location=perf)
+    return render_template('artist_account.html', artist=artist, event_list=events, location=perf, length=len(events))
 
 
 @app.route('/performance_edit/<performance>', methods=['GET', 'POST'])
@@ -176,60 +185,34 @@ def event_sign_up():
 
 @app.route('/map',  methods=['GET', 'POST'])
 def map():
-   # creating a map in the view
-   location_list = Location.query.all()
-   locations = []
-   for y in location_list:
-       random=[]
-       for x in range(1):
-           random.append(y.lat)
-           random.append(y.long)
-           locations.append(random)
+    location_list = Location.query.all()
+    locations = []
+    for y in location_list:
+        random=[]
+        for x in range(1):
+            random.append(y.lat)
+            random.append(y.long)
+            locations.append(random)
 
-   perfomances=Performance.query.all()
-   performancebyartist= []
+    artist=[]
+    for x in location_list:
+        t=x.performance.artistPerformances.artistRel.artistName
+        artist.append(t)
+    details1=[]
+    for x in location_list:
+        random=[]
+        for y in range(2):
+            t=x.performance.time
+            d=x.performance.date
+            random.append(t.strftime("%H:%M:%S"))
+            random.append(d.strftime("%Y-%m-%d"))
+            details1.append(random)
 
-   for y in perfomances:
-       performancebyartist.append(y.time.strftime('%m/%d/%Y/%H/%M'))
 
-       # random={"name": y.name, "lat": y.lat, "long": y.long, "id": y.id}
-       # locations.append(random)
 
-   return render_template('map.html', locations2=locations, length=len(locations), perfomances2=performancebyartist, perfLeng = len(performancebyartist))
+    return render_template('map.html', locations2=locations, length=len(locations), artist1=json.dumps(artist), details=details1)
 
-      # location_list = Location.query.all()
-   #
-   # locations = []
-   #
-   # for x in locations:
-   #
-   #     #add something that creates new location entry
-   #      for y in locations:
-#add each entry within the location
-   # locations = jsonify(locations)
-   # performances = Performance.query.all()
-   # performances = jsonify(performances)
-   # artists = Artist.query.all()
-   # #mymap = Map(
-       #identifier="view-side",
-       #lat=42.4440,
-       #lng=76.5019,
-       #markers=[(42.4440, 76.5019)]
-   #)
 
-   #sndmap = Map(
-       #identifier="sndmap",
-       #lat=42.4440,
-       #lng=-76.5019,
-       #markers=[
-           #{
-               #'icon': 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
-               #'lat': x.lat,
-               #'lng': x.long,
-               #'infobox': x.name
-           #}
-       #]
-   #)
 
 
 

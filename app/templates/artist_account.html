@@ -6,7 +6,7 @@
    <h2>Artist genre:  {{ artist.genre }}</h2>
    <h1>Performances</h1>
     {% for x in event_list %}
-        <li><b>Time:{{x.performance.time }}</b> Date:  <b>{{ x.performance.date }}</b> Location: <b>{{ x.performance.performanceloc.name }}</b></li>
+        <li><b>Time:{{x.performanceRel.time }}</b> Date:  <b>{{ x.performanceRel.date }}</b> Location: <b>{{ x.performanceRel.performanceloc.name }}</b></li>
       {% endfor %}
 
 

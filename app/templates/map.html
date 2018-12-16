@@ -13,9 +13,13 @@
 <h1>Here is a map!</h1>
  <div id="map" style="width: 500px; height: 400px;"></div>
 
+
  <script type="text/javascript">
-   var locations = {{ locations2 }};
-   var perfomances = {{ performances2}} ;
+     var locations = {{ locations2 }};
+     var artist={{ artist1|safe }};
+     var detailed={{ details|safe }};
+
+
 
     var map = new google.maps.Map(document.getElementById('map'), {
       zoom: 10,
@@ -23,25 +27,35 @@
       mapTypeId: google.maps.MapTypeId.ROADMAP
     });
 
+    var infowindow = new google.maps.InfoWindow();
+
     var marker, i;
-    var infowindow;
-
     for (i = 0; i < locations.length; i++) {
-      marker = new google.maps.Marker({
-        position: new google.maps.LatLng(locations[i][0], locations[i][1]),
-        map: map
-      });
+        marker = new google.maps.Marker({
+            position: new google.maps.LatLng(locations[i][0], locations[i][1]),
+            title: artist[i],
+            map: map
+        });
+        contentstring='artist: '+artist[i]+' date: '+detailed[i][1]+' time: '+detailed[i][0];
 
-      google.maps.event.addListener(marker, 'click', (function(marker, i) {
+        google.maps.event.addListener(marker, 'click', (function(marker, i) {
         return function() {
-            infowindow = new google.maps.InfoWindow({
-                content: perfomances[i]
-            });
-            infowindow.setContent();
-            infowindow.open(map, marker);
-            }
-        }));
+          infowindow.setContent(contentstring);
+          infowindow.open(map, marker);
+        }
+      })(marker, i));
+
     }
+
+
+    {#for (i = 0; i < locations.length; i++) {#}
+    {#    marker = new google.maps.Marker({#}
+    {#        position: new google.maps.LatLng(locations[i][0], locations[i][1]),#}
+    {#        map: map#}
+    {#    });#}
+     
+
+
 
  </script>
 </body>

@@ -11,7 +11,7 @@ class Artist(UserMixin, db.Model):
     artistName = db.Column(db.String(64), index=True, unique=True)
     bio = db.Column(db.String(600))
     genre = db.Column(db.String)
-    artistPerformances= db.relationship('ArtistToPerformance')
+    artistPerformances1= db.relationship('ArtistToPerformance', backref='artperfrel1')
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
 
@@ -49,8 +49,8 @@ class Performance(db.Model):
     time = db.Column(db.DateTime, index=True)
     date = db.Column(db.DateTime, index=True)
     locationId = db.Column(db.Integer, db.ForeignKey('location.id'))
-    artistPerformances = db.relationship('ArtistToPerformance')
-    performanceloc = db.relationship('Location')
+    artistPerformances = db.relationship('ArtistToPerformance', uselist=False, backref='artPerfRel')
+    performanceloc = db.relationship('Location', backref='performance1')
 
 
 class Location(db.Model):
@@ -58,15 +58,15 @@ class Location(db.Model):
     name=db.Column(db.String, index=True)
     long = db.Column(db.Float, index=True)
     lat = db.Column(db.Float, index=True)
-    performance=db.relationship('Performance')
+    performance=db.relationship('Performance', uselist=False, backref='performanceloc1')
 
 
 
 class ArtistToPerformance(db.Model):
     artistID = db.Column(db.Integer, db.ForeignKey('artist.id'),  primary_key=True)
     performanceID = db.Column(db.Integer, db.ForeignKey('performance.id'), primary_key=True)
-    artist = db.relationship('Artist')
-    performance = db.relationship('Performance')
+    artistRel = db.relationship('Artist', uselist=False, backref='artistrel')
+    performanceRel = db.relationship('Performance', backref='performancerel')
 
 
 
