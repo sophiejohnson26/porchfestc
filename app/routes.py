@@ -92,8 +92,10 @@ def performance_edit(performance):
     form = EditPerfomance()
     if form.delete.data:
         perfId=ArtistToPerformance.query.filter_by(performanceID=perf.id).first()
+        loc=Location.query.filter_by(id=perf.locationId).first()
         db.session.delete(perf)
         db.session.delete(perfId)
+        db.session.delete(loc)
         db.session.commit()
         return redirect(url_for('my_performances'))
     if form.validate_on_submit():
@@ -190,22 +192,26 @@ def map():
     for y in location_list:
         random=[]
         for x in range(1):
-            random.append(y.lat)
-            random.append(y.long)
-            locations.append(random)
+            if y!=None:
+                random.append(y.lat)
+                random.append(y.long)
+                locations.append(random)
 
     artist=[]
     for x in location_list:
-        t=x.performance.artistPerformances.artistRel.artistName
-        artist.append(t)
+        if x.performance!=None:
+            t=x.performance.artistPerformances.artistRel.artistName
+            artist.append(t)
+
     details1=[]
     for x in location_list:
         random=[]
         for y in range(2):
-            t=x.performance.time
-            d=x.performance.date
-            random.append(t.strftime("%H:%M:%S"))
-            random.append(d.strftime("%Y-%m-%d"))
+            if x.performance!= None:
+                t=x.performance.time
+                d=x.performance.date
+                random.append(t.strftime("%H:%M:%S"))
+                random.append(d.strftime("%Y-%m-%d"))
             details1.append(random)
 
 
